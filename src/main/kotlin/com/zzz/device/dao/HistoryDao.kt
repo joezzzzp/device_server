@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.MongoTemplate
 import org.springframework.data.mongodb.core.query.Criteria
 import org.springframework.data.mongodb.core.query.Query
 import org.springframework.stereotype.Repository
+import java.time.LocalDateTime
 
 @Repository
 class HistoryDao {
@@ -18,16 +19,33 @@ class HistoryDao {
   @Autowired
   private lateinit var mongoTemplate: MongoTemplate
 
-  fun save(histories: List<History>) {
+  fun saveAll(histories: List<History>) {
     historyRepo.saveAll(histories)
+  }
+
+  fun save(history: History) {
+    historyRepo.save(history)
   }
 
   fun findHistories(sn: String): List<History>? {
     return historyRepo.findBySn(sn)
   }
 
-  fun findHistoriesInSomeTime(sn: String, begin: Long, end: Long): List<History>? {
-    val query = Query(Criteria.where("sn").`is`(sn).and("collectDate").gt(begin).lt(end)).
+  fun findHistories(sn: String, skip: Long, limit: Int,
+                    startDate: LocalDateTime = LocalDateTime.parse("1970-01-01T00:00:00")): List<History>? {
+    val query = Query(Criteria.where("sn").`is`(sn).and("collectDate").gte(startDate))
+            .with(Sort.by(Sort.Order.desc("collectDate"))).skip(skip).limit(limit)
+    return mongoTemplate.find(query, History::class.java)
+  }
+
+  fun findLatestHistory(sn: String): History? {
+    val query = Query(Criteria.where("sn").`is`(sn)).with(Sort.by(Sort.Order.desc("collectDate")))
+    val histories = mongoTemplate.find(query, History::class.java)
+    return if (histories.isNotEmpty()) histories[0] else null
+  }
+
+  fun findHistoriesInSomeTime(sn: String, begin: LocalDateTime, end: LocalDateTime): List<History>? {
+    val query = Query(Criteria.where("sn").`is`(sn).and("collectDate").gte(begin).lte(end)).
                   with(Sort.by(Sort.Order.desc("collectDate")))
     return mongoTemplate.find(query, History::class.java)
   }

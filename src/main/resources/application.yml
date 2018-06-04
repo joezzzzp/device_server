@@ -3,6 +3,8 @@ spring:
     mongodb:
       uri: mongodb://localhost/device
 
+logging:
+  file: ./logs/device_server.log
 
 config:
   corporateId: 305f55e28c334b958777f9c037a02cd9
@@ -10,6 +12,7 @@ config:
   testSn:
     - 001221A00B39
     - 0011613003C8
-
-#logging:
-#  file: ./device_server_log/log.log
+    - 001221A00BB5
+    - 001221A00B25
+  marker: zzz
+  intervalInMs: 180000

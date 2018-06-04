@@ -1,13 +1,19 @@
 package com.zzz.device.pojo.persistent
 
+import com.fasterxml.jackson.annotation.JsonInclude
+import com.zzz.device.config.Config
 import com.zzz.device.pojo.response.DateItem
 import org.springframework.data.annotation.Id
+import org.springframework.data.mongodb.core.mapping.Document
+import java.time.Instant
+import java.time.LocalDateTime
 import java.util.*
 
+@Document(collection = "history")
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class History(@Id val id: String? = null,
               var sn: String = "",
-              var collectDate: Long = 0L,
-              var readableDate: Date = Date(collectDate),
+              var collectDate: LocalDateTime? = null,
               var switch1: Int = 0,
               var switch2: Int = 0,
               var switch3: Int = 0,
@@ -27,8 +33,7 @@ data class History(@Id val id: String? = null,
 
   constructor(data: DateItem): this() {
     sn = data.deviceNum.toUpperCase()
-    collectDate = data.collectDate
-    readableDate = Date(collectDate)
+    collectDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(data.collectDate), Config.UTC_PLUS_8)
     data.items.forEach {
       it.hexValues.run {
         when (FiledIdEnum.getField(it.fieldId)) {
@@ -52,10 +57,6 @@ data class History(@Id val id: String? = null,
         }
       }
     }
-  }
-
-  private fun getData() {
-
   }
 
   enum class FiledIdEnum(val fieldId: String) {

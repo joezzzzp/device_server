@@ -23,17 +23,7 @@ class DeviceDao {
     return deviceRepo.findBySn(sn)
   }
 
-  fun updateDevice(device: Device) {
-    val query = Query(Criteria.where("sn").`is`(device.sn))
-    val update = Update().
-                  set("lastUpdateTime", device.lastUpdateTime).
-                  set("readableDate", device.readableDate)
-    if (!StringUtils.isEmpty(device.name)) {
-      update.set("name", device.name)
-    }
-    if (device.sumInfo != null) {
-      update.set("sumInfo", device.sumInfo)
-    }
-    mongoTemplate.upsert(query, update, Device::class.java)
+  fun saveDevice(device: Device) {
+    deviceRepo.save(device)
   }
 }

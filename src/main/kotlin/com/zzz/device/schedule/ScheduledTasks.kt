@@ -25,13 +25,13 @@ class ScheduledTasks {
   @Autowired
   private lateinit var config: Config
 
-  @Scheduled(cron = "0/10 * * * * *")
+  @Scheduled(cron = "0 0 * * * *")
   fun sync() {
     logger.info("start sync at {}", dateFormat.format(Date()))
+    logger.info("marker: {}", config.marker)
     if (tokenService.refreshToken()) {
       deviceService.run {
-        getDeviceInfos(config.testSn)
-        countStatistics(config.testSn)
+        getDevicesInfo(config.testSn)
       }
       logger.info("sync success!")
     } else {

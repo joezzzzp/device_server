@@ -1,1 +1,3 @@
-rootProject.name = 'device'
+rootProject.name = 'device_server'
+include 'config_server'
+

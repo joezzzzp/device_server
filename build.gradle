@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        kotlinVersion = '1.2.30'
+        kotlinVersion = '1.2.60'
         springBootVersion = '2.0.1.RELEASE'
     }
     repositories {
@@ -21,7 +21,7 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
 group = 'com.zzz'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.1'
 sourceCompatibility = 1.8
 compileKotlin {
     kotlinOptions {
@@ -38,6 +38,15 @@ compileTestKotlin {
 
 repositories {
     mavenCentral()
+    maven {
+        url 'https://repo.spring.io/libs-milestone'
+    }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:Finchley.RC1"
+    }
 }
 
 dependencies {
@@ -45,8 +54,31 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-data-redis')
     compile("org.springframework.boot:spring-boot-starter-data-rest")
     compile('org.springframework.boot:spring-boot-starter-web')
+    compile('org.springframework.boot:spring-boot-starter-actuator')
+    compile('org.springframework.cloud:spring-cloud-starter-config')
     compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     compile("org.jetbrains.kotlin:kotlin-reflect")
     compileOnly "org.springframework.boot:spring-boot-configuration-processor"
     testCompile('org.springframework.boot:spring-boot-starter-test')
+}
+
+bootJar {
+    launchScript()
+}
+
+build {
+    doLast {
+        file("./build/libs/${jar.baseName}-${jar.version}.jar").renameTo("./build/libs/${jar.baseName}.jar")
+        copy {
+            from "./springboot.conf"
+            into "./build/libs"
+            rename {
+                "${jar.baseName}.conf"
+            }
+        }
+        copy {
+            from "./src/main/resources/application.yml"
+            into "./build/libs"
+        }
+    }
 }

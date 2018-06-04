@@ -25,3 +25,7 @@
 /dist/
 /nbdist/
 /.nb-gradle/
+
+### Custom ###
+/device_server_config/
+/device_server_log/
