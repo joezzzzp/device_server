@@ -35,8 +35,11 @@ class DeviceDataController {
 
   @GetMapping("info")
   @ResponseBody
-  fun query(@RequestParam(value="sn", defaultValue = "") sn: String): Device? =
-    deviceRepo.findBySn(sn.toUpperCase())
+  fun query(@RequestParam(value="sn", defaultValue = "") sn: String): Device? {
+    val upperSn = sn.toUpperCase()
+    scheduledTask.syncOne(upperSn)
+    return deviceRepo.findBySn(sn.toUpperCase())
+  }
 
   @GetMapping("history")
   @ResponseBody

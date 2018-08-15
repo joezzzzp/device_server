@@ -172,7 +172,10 @@ class DeviceService {
               launchTime = item.launchTime
               battery = item.battery
               signalIntensity = item.signalIntensity
-              switch4 = item.switch4
+              if (switch4 != 0) {
+                switch4 = item.switch4
+              }
+              collectDate = item.collectDate
 
               switch1 += if (item.switch1 == 0) 1 else 0
               switch2 += if (item.switch2 == 0) 1 else 0
@@ -186,6 +189,9 @@ class DeviceService {
           switch1 += if (item.switch1 == 0) 1 else 0
           switch2 += if (item.switch2 == 0) 1 else 0
           switch3 += if (item.switch3 == 0) 1 else 0
+          if (switch4 != 0) {
+            switch4 = item.switch4
+          }
         }
       }
       this.sumInfo = sumInfo

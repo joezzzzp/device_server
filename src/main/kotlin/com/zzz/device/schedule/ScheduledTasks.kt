@@ -39,4 +39,19 @@ class ScheduledTasks {
     }
     logger.info("end sync at {}", dateFormat.format(Date()))
   }
+
+  fun syncOne(sn: String) {
+    logger.info("start sync at {}", dateFormat.format(Date()))
+    logger.info("marker: {}", config.marker)
+    if (tokenService.refreshToken()) {
+      deviceService.run {
+        val sns = listOf(sn)
+        getDevicesInfo(sns)
+      }
+      logger.info("sync success!")
+    } else {
+      logger.info("sync failed!")
+    }
+    logger.info("end sync at {}", dateFormat.format(Date()))
+  }
 }

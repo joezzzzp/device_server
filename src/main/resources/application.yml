@@ -9,10 +9,14 @@ logging:
 config:
   corporateId: 305f55e28c334b958777f9c037a02cd9
   corporatePasswd: 1q2w3e4r
-  testSn:
-    - 001221A00B39
-    - 0011613003C8
-    - 001221A00BB5
-    - 001221A00B25
   marker: zzz
   intervalInMs: 180000
+  testSn:
+  - '001221A00B39'
+  - '0011613003C8'
+  - '001221A00BB5'
+  - '001221A00B25'
+  - '001161300365'
+  - '001221A00AF7'
+  - '001221A00B99'
+  - '001221A00B26'

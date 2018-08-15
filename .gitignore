@@ -29,3 +29,5 @@
 ### Custom ###
 /device_server_config/
 /device_server_log/
+build/
+logs/
