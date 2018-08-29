@@ -15,7 +15,7 @@ class Config {
   }
 
   lateinit var corporateId: String
-  lateinit var corporatePassword: String
+  lateinit var corporatePasswd: String
   var testSn: List<String> = listOf()
   var intervalInMs: Long = 60000
 }

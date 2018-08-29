@@ -10,7 +10,7 @@ import java.util.*
 @Document(collection = "device")
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 data class Device(@Id val id: String? = null,
-                  val sn: String = "",
+                  var sn: String = "",
                   var name: String = "",
                   var startTime: LocalDateTime? = LocalDateTime.parse("1970-01-01T00:00:00"),
                   var updatedAt: LocalDateTime? = LocalDateTime.parse("1970-01-01T00:00:00"),

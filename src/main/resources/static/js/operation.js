@@ -1,4 +1,10 @@
+var isUpdating = false;
+
 function updateList() {
+    if (isUpdating) {
+        return
+    }
+    isUpdating = true;
     var list = document.getElementById("sn_list");
     list.innerText = "";
     $.ajax({
@@ -13,12 +19,14 @@ function updateList() {
                 item.innerText = value;
                 list.appendChild(item);
             });
+            isUpdating = false;
         },
         error: function (XMLHttpRequest, textStatus, exception) {
             console.log(XMLHttpRequest);
             console.log(textStatus);
             console.log(exception);
-            alert("查询失败")
+            alert("查询失败");
+            isUpdating = false;
         }
     })
 }

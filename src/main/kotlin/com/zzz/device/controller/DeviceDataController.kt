@@ -46,7 +46,30 @@ class DeviceDataController {
     if (!StringUtils.isEmpty(sn)) {
       scheduledTask.syncOne(upperSn)
     }
-    return deviceRepo.findBySn(sn.toUpperCase())
+    val ret = deviceRepo.findBySn(sn.toUpperCase())
+    ret?.run {
+      this.sn = sn.toUpperCase()
+      if (sumInfo == null) {
+        sumInfo = History(sn = sn.toUpperCase(),
+          switch1 = -1,
+          switch2 = -1,
+          switch3 = -1,
+          switch4 = -1,
+          ad1 = -1,
+          ad2 = -1,
+          ad3 = -1,
+          ad4 = -1,
+          voltage = -1,
+          gpsLatitude = -1.0,
+          gpsLongitude = -1.0,
+          lbsLatitude = -1.0,
+          lbsLongitude = -1.0,
+          launchTime = -1,
+          battery = -1,
+          signalIntensity = -1)
+      }
+    }
+    return ret
   }
 
   @GetMapping("history")
@@ -64,7 +87,7 @@ class DeviceDataController {
                       @RequestParam(value = "newTimeStamp") newTimeStamp: Long?): Map<String, Any> {
     val newDate = if (newTimeStamp != null)
       LocalDateTime.ofInstant(Instant.ofEpochMilli(newTimeStamp), Config.UTC_PLUS_8) else LocalDateTime.now()
-    val device = deviceDao.findDevice(sn)
+    val device = deviceDao.findDevice(sn.toUpperCase())
     device?.run {
       startTime = newDate
       status = DeviceStatus.NORMAL

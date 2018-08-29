@@ -35,7 +35,7 @@ class TokenService {
     val restTemplate = RestTemplate()
     for (i in 0..MAX_RETRY_TIME) {
       val response = restTemplate.postForObject(url, TokenRequest(config.corporateId,
-        config.corporatePassword), TokenResponse::class.java)
+        config.corporatePasswd), TokenResponse::class.java)
       if (response != null && response.respCode == Config.successCode) {
         tokenDao.updateToken(Token(token = response.token, expireTime = response.expireTime))
         logger.info("get token success!")

@@ -5,6 +5,7 @@ import com.zzz.device.config.Config
 import com.zzz.device.pojo.response.DateItem
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
+import org.springframework.util.StringUtils
 import java.time.Instant
 import java.time.LocalDateTime
 import java.util.*
@@ -36,24 +37,31 @@ data class History(@Id val id: String? = null,
     collectDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(data.collectDate), Config.UTC_PLUS_8)
     data.items.forEach {
       it.hexValues.run {
-        when (FiledIdEnum.getField(it.fieldId)) {
-          FiledIdEnum.SWITCH1 -> switch1 = toInt()
-          FiledIdEnum.SWITCH2 -> switch2 = toInt()
-          FiledIdEnum.SWITCH3 -> switch3 = toInt()
-          FiledIdEnum.SWITCH4 -> switch4 = toInt()
-          FiledIdEnum.AD1 -> ad1 = toInt()
-          FiledIdEnum.AD2 -> ad2 = toInt()
-          FiledIdEnum.AD3 -> ad3 = toInt()
-          FiledIdEnum.AD4 -> ad4 = toInt()
-          FiledIdEnum.VOLTAGE -> voltage = toInt()
-          FiledIdEnum.GPS_LONGITUDE -> gpsLongitude = toDouble()
-          FiledIdEnum.GPS_LATITUDE -> gpsLatitude = toDouble()
-          FiledIdEnum.LBS_LONGITUDE -> lbsLongitude = toDouble()
-          FiledIdEnum.LBS_LATITUDE -> lbsLatitude = toDouble()
-          FiledIdEnum.LAUNCH_TIME -> launchTime = toInt()
-          FiledIdEnum.BATTERY -> battery = toInt()
-          FiledIdEnum.SIGNAL_INTENSITY -> signalIntensity = toInt()
-          else -> {}
+        if (StringUtils.isEmpty(this)) {
+          return@run
+        }
+        try {
+          when (FiledIdEnum.getField(it.fieldId)) {
+            FiledIdEnum.SWITCH1 -> switch1 = toInt()
+            FiledIdEnum.SWITCH2 -> switch2 = toInt()
+            FiledIdEnum.SWITCH3 -> switch3 = toInt()
+            FiledIdEnum.SWITCH4 -> switch4 = toInt()
+            FiledIdEnum.AD1 -> ad1 = toInt()
+            FiledIdEnum.AD2 -> ad2 = toInt()
+            FiledIdEnum.AD3 -> ad3 = toInt()
+            FiledIdEnum.AD4 -> ad4 = toInt()
+            FiledIdEnum.VOLTAGE -> voltage = toInt()
+            FiledIdEnum.GPS_LONGITUDE -> gpsLongitude = toDouble()
+            FiledIdEnum.GPS_LATITUDE -> gpsLatitude = toDouble()
+            FiledIdEnum.LBS_LONGITUDE -> lbsLongitude = toDouble()
+            FiledIdEnum.LBS_LATITUDE -> lbsLatitude = toDouble()
+            FiledIdEnum.LAUNCH_TIME -> launchTime = toInt()
+            FiledIdEnum.BATTERY -> battery = toInt()
+            FiledIdEnum.SIGNAL_INTENSITY -> signalIntensity = toInt()
+            else -> {}
+          }
+        } catch (e: Exception) {
+          println("${it.fieldId}: ${it.hexValues}")
         }
       }
     }
