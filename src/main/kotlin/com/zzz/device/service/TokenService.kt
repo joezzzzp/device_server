@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.util.StringUtils
 import org.springframework.web.client.RestTemplate
-import java.util.*
 
 @Service
 class TokenService {
@@ -36,7 +35,7 @@ class TokenService {
     val restTemplate = RestTemplate()
     for (i in 0..MAX_RETRY_TIME) {
       val response = restTemplate.postForObject(url, TokenRequest(config.corporateId,
-        config.corporatePasswd), TokenResponse::class.java)
+        config.corporatePassword), TokenResponse::class.java)
       if (response != null && response.respCode == Config.successCode) {
         tokenDao.updateToken(Token(token = response.token, expireTime = response.expireTime))
         logger.info("get token success!")

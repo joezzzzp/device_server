@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>维护页</title>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="js/operation.js"></script>
+</head>
+<body>
+<p>
+    <input type="text" id="sn_added">
+    <button id="add"  onclick="addSn()">
+        添加
+    </button>
+</p>
+<p>
+    <input type="text" id="sn_deleted">
+    <button id="delete" onclick="deleteSn()">
+        删除
+    </button>
+</p>
+<p>
+    <button id="findAll" onclick="updateList()">
+        查询所有
+    </button>
+<ul id="sn_list">
+</ul>
+</p>
+</body>
+</html>

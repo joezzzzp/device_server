@@ -1,13 +1,11 @@
 package com.zzz.device.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.cloud.context.config.annotation.RefreshScope
 import org.springframework.stereotype.Component
 import java.time.ZoneOffset
 
 @Component
 @ConfigurationProperties(prefix = "config")
-@RefreshScope
 class Config {
   companion object {
     const val successCode = "00000000"
@@ -17,8 +15,7 @@ class Config {
   }
 
   lateinit var corporateId: String
-  lateinit var corporatePasswd: String
+  lateinit var corporatePassword: String
   var testSn: List<String> = listOf()
-  lateinit var marker: String
   var intervalInMs: Long = 60000
 }

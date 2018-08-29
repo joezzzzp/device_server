@@ -1,6 +1,7 @@
 package com.zzz.device.schedule
 
 import com.zzz.device.config.Config
+import com.zzz.device.dao.AllDeviceDao
 import com.zzz.device.service.DeviceService
 import com.zzz.device.service.TokenService
 import org.slf4j.LoggerFactory
@@ -23,15 +24,14 @@ class ScheduledTasks {
   private lateinit var deviceService: DeviceService
 
   @Autowired
-  private lateinit var config: Config
+  private lateinit var allDeviceDao: AllDeviceDao
 
   @Scheduled(cron = "0 0 * * * *")
   fun sync() {
     logger.info("start sync at {}", dateFormat.format(Date()))
-    logger.info("marker: {}", config.marker)
     if (tokenService.refreshToken()) {
       deviceService.run {
-        getDevicesInfo(config.testSn)
+        getDevicesInfo(allDeviceDao.findAll())
       }
       logger.info("sync success!")
     } else {
@@ -42,7 +42,6 @@ class ScheduledTasks {
 
   fun syncOne(sn: String) {
     logger.info("start sync at {}", dateFormat.format(Date()))
-    logger.info("marker: {}", config.marker)
     if (tokenService.refreshToken()) {
       deviceService.run {
         val sns = listOf(sn)

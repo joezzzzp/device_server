@@ -8,8 +8,7 @@ logging:
 
 config:
   corporateId: 305f55e28c334b958777f9c037a02cd9
-  corporatePasswd: 1q2w3e4r
-  marker: zzz
+  corporatePassword: 1q2w3e4r
   intervalInMs: 180000
   testSn:
   - '001221A00B39'

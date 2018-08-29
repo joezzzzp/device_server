@@ -1,15 +1,18 @@
 package com.zzz.device.controller
 
 import com.zzz.device.config.Config
+import com.zzz.device.dao.AllDeviceDao
 import com.zzz.device.dao.DeviceDao
 import com.zzz.device.dao.HistoryDao
 import com.zzz.device.dao.repo.DeviceRepository
 import com.zzz.device.pojo.persistent.Device
 import com.zzz.device.pojo.persistent.DeviceStatus
 import com.zzz.device.pojo.persistent.History
+import com.zzz.device.pojo.request.AddSyncDevicesRequest
 import com.zzz.device.schedule.ScheduledTasks
 import com.zzz.device.service.DeviceService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.util.StringUtils
 import org.springframework.web.bind.annotation.*
 import java.time.Instant
 import java.time.LocalDateTime
@@ -33,11 +36,16 @@ class DeviceDataController {
   @Autowired
   private lateinit var deviceService: DeviceService
 
+  @Autowired
+  private lateinit var allDeviceDao: AllDeviceDao
+
   @GetMapping("info")
   @ResponseBody
   fun query(@RequestParam(value="sn", defaultValue = "") sn: String): Device? {
     val upperSn = sn.toUpperCase()
-    scheduledTask.syncOne(upperSn)
+    if (!StringUtils.isEmpty(sn)) {
+      scheduledTask.syncOne(upperSn)
+    }
     return deviceRepo.findBySn(sn.toUpperCase())
   }
 
@@ -76,5 +84,24 @@ class DeviceDataController {
   fun startSync(): Map<String, Any> {
     thread(true) { scheduledTask.sync() }
     return mapOf("code" to 200, "message" to "Start sync")
+  }
+
+  @DeleteMapping("remove/{sn}")
+  @ResponseBody
+  fun deleteSyncDevice(@PathVariable("sn") sn: String): Map<String, Any> {
+    allDeviceDao.delete(sn)
+    return mapOf("code" to 200, "message" to "Delete success")
+  }
+
+  @PostMapping("add")
+  @ResponseBody
+  fun addSyncDevices(@RequestBody request: AddSyncDevicesRequest): Map<String, Any> {
+    allDeviceDao.saveSns(request.snList)
+    return mapOf("code" to 200, "message" to "Add success")
+  }
+
+  @GetMapping("findAll")
+  fun findSyncDevices(): Map<String, Any> {
+    return mapOf("code" to 200, "message" to "Query success", "data" to allDeviceDao.findAll())
   }
 }
