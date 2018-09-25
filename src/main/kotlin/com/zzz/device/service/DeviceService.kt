@@ -122,7 +122,21 @@ class DeviceService {
           latestHistory.switch2 = handleSwitch(latestHistory.switch2, item.switch2)
           latestHistory.switch3 = handleSwitch(latestHistory.switch3, item.switch3)
           latestHistory.switch4 = handleSwitch(latestHistory.switch4, item.switch4)
-          latestHistory.collectDate = item.collectDate
+          latestHistory.run {
+            collectDate = item.collectDate
+            ad1 = item.ad1
+            ad2 = item.ad2
+            ad3 = item.ad3
+            ad4 = item.ad4
+            voltage = item.voltage
+            gpsLatitude = item.gpsLatitude
+            gpsLongitude = item.gpsLongitude
+            lbsLatitude = item.lbsLatitude
+            lbsLongitude = item.lbsLongitude
+            launchTime = item.launchTime
+            battery = item.battery
+            signalIntensity = item.signalIntensity
+          }
         }
         if (i == histories.size - 1) {
           historyDao.save(latestHistory)
