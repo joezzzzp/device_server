@@ -14,6 +14,9 @@ import com.zzz.device.service.DeviceService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.util.StringUtils
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
+import java.io.BufferedReader
+import java.io.InputStreamReader
 import java.time.Instant
 import java.time.LocalDateTime
 import kotlin.concurrent.thread
@@ -126,5 +129,21 @@ class DeviceDataController {
   @GetMapping("findAll")
   fun findSyncDevices(): Map<String, Any> {
     return mapOf("code" to 200, "message" to "Query success", "data" to allDeviceDao.findAll())
+  }
+
+  @PostMapping("upload")
+  fun resolveUploadFile(@RequestParam("file") file: MultipartFile): Map<String, Any> {
+    val reader = BufferedReader(InputStreamReader(file.inputStream))
+    val sns = mutableListOf<String>()
+    while (true) {
+      val sn = reader.readLine() ?: break
+      if (sn.isNotBlank()) {
+        sns.add(sn.trim())
+      }
+    }
+    if (sns.isNotEmpty()) {
+      allDeviceDao.saveSns(sns)
+    }
+    return mapOf("code" to 200, "message" to "Read file success")
   }
 }

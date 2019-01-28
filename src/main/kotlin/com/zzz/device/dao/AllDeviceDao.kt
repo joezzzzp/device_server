@@ -26,6 +26,9 @@ class AllDeviceDao {
   }
 
   fun save(sn: String) {
+    if (sn.isBlank()) {
+      return
+    }
     val query = Query(Criteria.where("sn").`is`(sn))
     val update = Update.update("sn", sn)
     mongoTemplate.upsert(query, update, AllDevice::class.java)

@@ -8,8 +8,14 @@
 </head>
 <body>
 <p>
+    <input type="file" id="sn_file" name="file" multiple>
+    <button id="upload" onclick="uploadFile()">
+        上传文件
+    </button>
+</p>
+<p>
     <input type="text" id="sn_added">
-    <button id="add"  onclick="addSn()">
+    <button id="add" onclick="addSn()">
         添加
     </button>
 </p>
@@ -23,8 +29,8 @@
     <button id="findAll" onclick="updateList()">
         查询所有
     </button>
+</p>
 <ul id="sn_list">
 </ul>
-</p>
 </body>
 </html>

@@ -1,5 +1,28 @@
 var isUpdating = false;
 
+function uploadFile() {
+    var files = document.getElementById("sn_file").files;
+    var formData = new FormData();
+    formData.append("file", files[0]);
+    $.ajax({
+        type: "POST",
+        url: "upload",
+        data: formData,
+        processData:false,
+        contentType: false,
+        success: function (response) {
+            console.log(response);
+            alert("上传成功");
+        },
+        error: function (XMLHttpRequest, textStatus, exception) {
+            console.log(XMLHttpRequest);
+            console.log(textStatus);
+            console.log(exception);
+            alert("上传失败")
+        }
+    })
+}
+
 function updateList() {
     if (isUpdating) {
         return
