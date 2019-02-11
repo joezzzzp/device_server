@@ -60,7 +60,6 @@ class DeviceService {
       request.beginDate = device?.updatedAt?.toInstant(Config.UTC_PLUS_8)?.toEpochMilli() ?: 0L
       getDeviceInfo(url, request)
       count--
-      TimeUnit.SECONDS.sleep(1)
     }
     isSyncing = false
     count = 0
