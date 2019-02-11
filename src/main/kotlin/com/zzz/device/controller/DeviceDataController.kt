@@ -108,8 +108,23 @@ class DeviceDataController {
   @GetMapping("syncService/sync")
   @ResponseBody
   fun startSync(): Map<String, Any> {
+    val remainSn = scheduledTask.isSyncing()
+    if (remainSn > -1) {
+      return mapOf("code" to 101, "message" to "There is a running job, $remainSn sns are waiting for sync, " +
+              "please try later")
+    }
     thread(true) { scheduledTask.sync() }
     return mapOf("code" to 200, "message" to "Start sync")
+  }
+
+  @GetMapping("syncService/syncStatus")
+  fun getSyncStatus(): Map<String, Any> {
+    val remainSn = scheduledTask.isSyncing()
+    if (remainSn > -1) {
+      return mapOf("code" to 101, "message" to "There is a running job, $remainSn sns are waiting for sync. " +
+              "If you want to start a new sync job, please wait the current job finish")
+    }
+    return mapOf("code" to 200, "message" to "No job is running, you can start a sync job now")
   }
 
   @DeleteMapping("remove/{sn}")

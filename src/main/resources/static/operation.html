@@ -7,6 +7,9 @@
     <script type="text/javascript" src="js/operation.js"></script>
 </head>
 <body>
+<h2>
+    sn维护
+</h2>
 <p>
     <input type="file" id="sn_file" name="file" multiple>
     <button id="upload" onclick="uploadFile()">
@@ -32,5 +35,24 @@
 </p>
 <ul id="sn_list">
 </ul>
+<h2>
+    同步任务控制
+</h2>
+<p>
+    <button id="checkSyncStatus" onclick="checkSyncStatus()">
+        查询同步状态
+    </button>
+</p>
+<p id="syncStatus">
+
+</p>
+<p>
+    <button id="startSync" onclick="startSyncTask()">
+        启动同步
+    </button>
+</p>
+<p id="startSyncResult">
+
+</p>
 </body>
 </html>

@@ -11,6 +11,7 @@ import com.zzz.device.pojo.response.DateItem
 import com.zzz.device.pojo.response.DeviceInfoResponse
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.mongodb.core.aggregation.DateOperators
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -21,6 +22,7 @@ import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDateTime
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 @Service
 class DeviceService {
@@ -29,6 +31,9 @@ class DeviceService {
     private const val DATE_INFO_URL_TEMPLATE = "https://api.hizyf.com/DM-open-service/service/getByDate/%s"
     private const val MAX_RETRY_TIMES = 5
   }
+
+  var isSyncing = false
+  var count = 0
 
   private val logger = LoggerFactory.getLogger(DeviceService::class.java)
   private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
@@ -43,13 +48,22 @@ class DeviceService {
   private lateinit var config: Config
 
   fun getDevicesInfo(sns: List<String>) {
+    if (isSyncing) {
+      return
+    }
+    isSyncing = true
+    count = sns.size
     val url = String.format(DATE_INFO_URL_TEMPLATE, config.corporateId)
     sns.forEach {
       val device = deviceDao.findDevice(it)
       val request = DeviceInfoRequest(deviceSn = it, endDate = LocalDateTime.now().toInstant(Config.UTC_PLUS_8).toEpochMilli())
       request.beginDate = device?.updatedAt?.toInstant(Config.UTC_PLUS_8)?.toEpochMilli() ?: 0L
       getDeviceInfo(url, request)
+      count--
+      TimeUnit.SECONDS.sleep(1)
     }
+    isSyncing = false
+    count = 0
   }
 
   private fun getDeviceInfo(url: String, request: DeviceInfoRequest) {

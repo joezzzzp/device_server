@@ -99,3 +99,46 @@ function deleteSn() {
     })
 }
 
+function checkSyncStatus() {
+    var text = document.getElementById("syncStatus")
+    $.ajax({
+        type: "GET",
+        url: "syncService/syncStatus",
+        dataType: "json",
+        success: function (response) {
+            if (response.code === 200) {
+                text.innerHTML = "<div style=\"color: blue\">No task is running, you can start a new job now</div>";
+            } else {
+                text.innerHTML = "<div style=\"color: red\">" + response.message + "</div>";
+            }
+        },
+        error:function (XMLHttpRequest, textStatus, exception) {
+            console.log(XMLHttpRequest);
+            console.log(textStatus);
+            console.log(exception);
+            alert("查询失败")
+        }
+    })
+}
+
+function startSyncTask() {
+    var text = document.getElementById("startSyncResult")
+    $.ajax({
+        type: "GET",
+        url: "syncService/sync",
+        dataType: "json",
+        success: function (response) {
+            if (response.code === 200) {
+                text.innerHTML = "<div style=\"color: blue\">A new job has been started</div>";
+            } else {
+                text.innerHTML = "<div style=\"color: red\">" + response.message + "</div>";
+            }
+        },
+        error:function (XMLHttpRequest, textStatus, exception) {
+            console.log(XMLHttpRequest);
+            console.log(textStatus);
+            console.log(exception);
+            alert("启动失败")
+        }
+    })
+}

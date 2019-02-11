@@ -1,6 +1,5 @@
 package com.zzz.device.schedule
 
-import com.zzz.device.config.Config
 import com.zzz.device.dao.AllDeviceDao
 import com.zzz.device.service.DeviceService
 import com.zzz.device.service.TokenService
@@ -38,6 +37,17 @@ class ScheduledTasks {
       logger.info("sync failed!")
     }
     logger.info("end sync at {}", dateFormat.format(Date()))
+  }
+
+  /**
+   * Return the number of sn to be synced.
+   * 0 means no sync task is running, we can start a new one
+   */
+  fun isSyncing(): Int {
+    if (!deviceService.isSyncing) {
+      return -1
+    }
+    return deviceService.count
   }
 
   fun syncOne(sn: String) {
