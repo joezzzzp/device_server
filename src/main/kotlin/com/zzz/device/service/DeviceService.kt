@@ -1,5 +1,6 @@
 package com.zzz.device.service
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.zzz.device.config.Config
 import com.zzz.device.dao.DeviceDao
 import com.zzz.device.dao.HistoryDao
@@ -46,6 +47,9 @@ class DeviceService {
 
   @Autowired
   private lateinit var config: Config
+
+  @Autowired
+  private lateinit var objectMapper: ObjectMapper
 
   fun getDevicesInfo(sns: List<String>) {
     if (isSyncing) {
@@ -96,6 +100,7 @@ class DeviceService {
           dateFormat.format(Date(request.endDate)))
         return
       }
+      logger.error("get \"{}\" data failed! error message: {}", request.deviceSn, objectMapper.writeValueAsString(response))
       logger.warn("get \"{}\" data failed! try again (remain retry time: ${MAX_RETRY_TIMES - i})", request.deviceSn)
     }
     logger.warn("get \"{}\" data failed!", request.deviceSn)
