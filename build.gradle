@@ -78,5 +78,9 @@ build {
             from "./src/main/resources/application.yml"
             into "./build/libs"
         }
+        copy {
+            from "./restart.sh"
+            into "./build/libs"
+        }
     }
 }
