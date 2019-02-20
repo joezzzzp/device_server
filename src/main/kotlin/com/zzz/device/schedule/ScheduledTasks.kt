@@ -1,8 +1,8 @@
 package com.zzz.device.schedule
 
+import com.zzz.device.annotation.TokenRefresh
 import com.zzz.device.dao.AllDeviceDao
 import com.zzz.device.service.DeviceService
-import com.zzz.device.service.TokenService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.Scheduled
@@ -17,24 +17,17 @@ class ScheduledTasks {
   private val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 
   @Autowired
-  private lateinit var tokenService: TokenService
-
-  @Autowired
   private lateinit var deviceService: DeviceService
 
   @Autowired
   private lateinit var allDeviceDao: AllDeviceDao
 
   @Scheduled(cron = "0 0 * * * *")
+  @TokenRefresh
   fun sync() {
     logger.info("start sync at {}", dateFormat.format(Date()))
-    if (tokenService.refreshToken()) {
-      deviceService.run {
-        getDevicesInfo(allDeviceDao.findAll())
-      }
-      logger.info("sync success!")
-    } else {
-      logger.info("sync failed!")
+    deviceService.run {
+      getDevicesInfo(allDeviceDao.findAll())
     }
     logger.info("end sync at {}", dateFormat.format(Date()))
   }
@@ -50,16 +43,12 @@ class ScheduledTasks {
     return deviceService.count
   }
 
+  @TokenRefresh
   fun syncOne(sn: String) {
     logger.info("start sync at {}", dateFormat.format(Date()))
-    if (tokenService.refreshToken()) {
-      deviceService.run {
-        val sns = listOf(sn)
-        getDevicesInfo(sns)
-      }
-      logger.info("sync success!")
-    } else {
-      logger.info("sync failed!")
+    deviceService.run {
+      val sns = listOf(sn)
+      getDevicesInfo(sns)
     }
     logger.info("end sync at {}", dateFormat.format(Date()))
   }
