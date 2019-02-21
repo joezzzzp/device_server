@@ -12,7 +12,6 @@ import com.zzz.device.pojo.response.DateItem
 import com.zzz.device.pojo.response.DeviceInfoResponse
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.mongodb.core.aggregation.DateOperators
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
@@ -23,7 +22,6 @@ import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDateTime
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 @Service
 class DeviceService {

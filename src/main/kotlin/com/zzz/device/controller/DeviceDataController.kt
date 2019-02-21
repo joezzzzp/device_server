@@ -1,7 +1,6 @@
 package com.zzz.device.controller
 
 import com.zzz.device.config.Config
-import com.zzz.device.config.ExecutorConfig
 import com.zzz.device.dao.AllDeviceDao
 import com.zzz.device.dao.DeviceDao
 import com.zzz.device.dao.HistoryDao
@@ -22,8 +21,6 @@ import java.io.InputStreamReader
 import java.time.Instant
 import java.time.LocalDateTime
 import java.util.concurrent.ExecutorService
-import javax.annotation.Resource
-import kotlin.concurrent.thread
 
 @RestController
 class DeviceDataController {
