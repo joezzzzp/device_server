@@ -65,6 +65,10 @@ bootJar {
     launchScript()
 }
 
+clean {
+    delete("./out", "./logs")
+}
+
 build {
     doLast {
         file("./build/libs/${jar.baseName}-${jar.version}.jar").renameTo("./build/libs/${jar.baseName}.jar")
