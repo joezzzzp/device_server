@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        kotlinVersion = '1.2.60'
+        kotlinVersion = '1.3.11'
         springBootVersion = '2.0.4.RELEASE'
     }
     repositories {
@@ -71,12 +71,13 @@ clean {
 
 build {
     doLast {
-        file("./build/libs/${jar.baseName}-${jar.version}.jar").renameTo("./build/libs/${jar.baseName}.jar")
+        file("./build/libs/${jar.archiveBaseName.getOrElse()}-${jar.archiveVersion.getOrElse()}.jar")
+                .renameTo("./build/libs/${jar.archiveBaseName.getOrElse()}.jar")
         copy {
             from "./springboot.conf"
             into "./build/libs"
             rename {
-                "${jar.baseName}.conf"
+                "${jar.archiveBaseName.getOrElse()}.conf"
             }
         }
         copy {
