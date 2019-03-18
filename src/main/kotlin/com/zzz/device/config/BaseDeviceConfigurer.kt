@@ -8,7 +8,6 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
 import com.zzz.device.annotation.ConditionalOnAuthSwitch
-import com.zzz.device.pojo.request.ApiCountRequest
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Configuration
@@ -33,7 +32,7 @@ class BaseDeviceConfigurer : InitializingBean, WebMvcConfigurer {
   override fun afterPropertiesSet() {
     val module = SimpleModule()
     module.addSerializer(LocalDateTime::class.java, CustomLocalDateTimeSerializer())
-    module.addDeserializer(LocalDateTime::class.java, CustomLocatDateTimeDeserializer())
+    module.addDeserializer(LocalDateTime::class.java, CustomLocalDateTimeDeserializer())
     mapper.configure(SerializationFeature.WRITE_DATES_WITH_ZONE_ID, false)
     mapper.configure(SerializationFeature. WRITE_DATES_AS_TIMESTAMPS, false)
     mapper.registerModule(module).registerModule(ParameterNamesModule()).registerModule(Jdk8Module()).registerModule(JavaTimeModule())
@@ -64,7 +63,7 @@ class BaseDeviceConfigurer : InitializingBean, WebMvcConfigurer {
     }
   }
 
-  private class CustomLocatDateTimeDeserializer: JsonDeserializer<LocalDateTime>() {
+  private class CustomLocalDateTimeDeserializer: JsonDeserializer<LocalDateTime>() {
     override fun deserialize(p: JsonParser?, ctxt: DeserializationContext?): LocalDateTime? {
       return LocalDateTime.parse(p?.valueAsString ?: "", dateTimeFormatter)
     }
