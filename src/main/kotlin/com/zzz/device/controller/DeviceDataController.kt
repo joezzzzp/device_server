@@ -1,7 +1,9 @@
 package com.zzz.device.controller
 
+import com.zzz.device.ApiCountUtils
 import com.zzz.device.config.Config
 import com.zzz.device.dao.AllDeviceDao
+import com.zzz.device.dao.ApiCountDao
 import com.zzz.device.dao.DeviceDao
 import com.zzz.device.dao.HistoryDao
 import com.zzz.device.dao.repo.DeviceRepository
@@ -9,6 +11,7 @@ import com.zzz.device.pojo.persistent.Device
 import com.zzz.device.pojo.persistent.DeviceStatus
 import com.zzz.device.pojo.persistent.History
 import com.zzz.device.pojo.request.AddSyncDevicesRequest
+import com.zzz.device.pojo.request.ApiCountRequest
 import com.zzz.device.schedule.ScheduledTasks
 import com.zzz.device.service.DeviceService
 import org.springframework.beans.factory.annotation.Autowired
@@ -47,9 +50,13 @@ class DeviceDataController {
   @Qualifier(value = "syncTaskExecutor")
   private lateinit var syncTaskExecutor: ExecutorService
 
+  @Autowired
+  private lateinit var apiCountDao: ApiCountDao
+
   @GetMapping("info")
   @ResponseBody
   fun query(@RequestParam(value="sn", defaultValue = "") sn: String): Device? {
+    ApiCountUtils.count(ApiCountUtils.INFO_KEY)
     val upperSn = sn.toUpperCase()
     if (!StringUtils.isEmpty(sn)) {
       scheduledTask.syncOne(upperSn)
@@ -85,6 +92,7 @@ class DeviceDataController {
   fun history(@RequestParam(value = "sn", defaultValue = "") sn: String,
               @RequestParam(value = "skip", defaultValue = "0") skip: Long,
               @RequestParam(value = "limit", defaultValue = "0") limit: Int): List<History>? {
+    ApiCountUtils.count(ApiCountUtils.HISTORY_KEY)
     val device = deviceRepo.findBySn(sn) ?: return arrayListOf()
     val startTime = device.startTime ?: return arrayListOf()
     return historyDao.findHistories(sn, skip, limit, startTime)
@@ -93,6 +101,7 @@ class DeviceDataController {
   @GetMapping("updateDate")
   fun updateStartTime(@RequestParam(value = "sn", defaultValue = "") sn: String,
                       @RequestParam(value = "newTimeStamp") newTimeStamp: Long?): Map<String, Any> {
+    ApiCountUtils.count(ApiCountUtils.UPDATE_TIME_KEY)
     val newDate = if (newTimeStamp != null)
       LocalDateTime.ofInstant(Instant.ofEpochMilli(newTimeStamp), Config.UTC_PLUS_8) else LocalDateTime.now()
     val device = deviceDao.findDevice(sn.toUpperCase())
@@ -165,5 +174,14 @@ class DeviceDataController {
       allDeviceDao.saveSns(sns)
     }
     return mapOf("code" to 200, "message" to "Read file success")
+  }
+
+  @GetMapping("/apiCount")
+  fun apiCount(@RequestBody apiCountRequest: ApiCountRequest): Map<String, Any> {
+    val ret = mutableMapOf<String, Int>()
+    apiCountDao.count(apiCountRequest.key, apiCountRequest.beginTime, apiCountRequest.endTime).forEach {
+      ret[it.key] = it.count
+    }
+    return mapOf("code" to 200, "message" to "Count success", "data" to ret)
   }
 }

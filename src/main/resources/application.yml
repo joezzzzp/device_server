@@ -9,6 +9,10 @@ spring:
 logging:
   file: ./logs/device_server.log
 
+appCron:
+  apiCount: 0 0 * * * *
+  dataSync: 0 0 * * * *
+
 config:
   corporateId: 305f55e28c334b958777f9c037a02cd9
   corporatePasswd: 1q2w3e4r

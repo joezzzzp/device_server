@@ -1,13 +1,17 @@
 package com.zzz.device.schedule
 
+import com.zzz.device.ApiCountUtils
 import com.zzz.device.annotation.TokenRefresh
 import com.zzz.device.dao.AllDeviceDao
+import com.zzz.device.dao.ApiCountDao
+import com.zzz.device.pojo.persistent.ApiCount
 import com.zzz.device.service.DeviceService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
 import java.util.*
 
 @Component
@@ -22,7 +26,20 @@ class ScheduledTasks {
   @Autowired
   private lateinit var allDeviceDao: AllDeviceDao
 
-  @Scheduled(cron = "0 0 * * * *")
+  @Autowired
+  private lateinit var apiCountDao: ApiCountDao
+
+  @Scheduled(cron = "\${appCron.apiCount}")
+  fun saveApiCount() {
+    val collectionData = ApiCountUtils.collect()
+    collectionData.forEach { data ->
+      if (data.second > 0) {
+        apiCountDao.save(ApiCount(key = data.first, count = data.second, saveTime = LocalDateTime.now()))
+      }
+    }
+  }
+
+  @Scheduled(cron = "\${appCron.dataSync}")
   @TokenRefresh
   fun sync() {
     logger.info("start sync at {}", dateFormat.format(Date()))
