@@ -180,7 +180,8 @@ class DeviceDataController {
   fun apiCount(@RequestBody apiCountRequest: ApiCountRequest): Map<String, Any> {
     val ret = mutableMapOf<String, Int>()
     apiCountDao.count(apiCountRequest.key, apiCountRequest.beginTime, apiCountRequest.endTime).forEach {
-      ret[it.key] = it.count
+      val lastCount = ret[it.key] ?: 0
+      ret[it.key] = it.count + lastCount
     }
     return mapOf("code" to 200, "message" to "Count success", "data" to ret)
   }
