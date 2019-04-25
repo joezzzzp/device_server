@@ -1,5 +1,12 @@
 var isUpdating = false;
 
+function commonError(XMLHttpRequest, textStatus, exception, message) {
+    console.log(XMLHttpRequest);
+    console.log(textStatus);
+    console.log(exception);
+    alert(message)
+}
+
 function uploadFile() {
     var files = document.getElementById("sn_file").files;
     var formData = new FormData();
@@ -15,10 +22,7 @@ function uploadFile() {
             alert("上传成功");
         },
         error: function (XMLHttpRequest, textStatus, exception) {
-            console.log(XMLHttpRequest);
-            console.log(textStatus);
-            console.log(exception);
-            alert("上传失败")
+            commonError(XMLHttpRequest, textStatus, exception, "上传失败");
         }
     })
 }
@@ -45,11 +49,7 @@ function updateList() {
             isUpdating = false;
         },
         error: function (XMLHttpRequest, textStatus, exception) {
-            console.log(XMLHttpRequest);
-            console.log(textStatus);
-            console.log(exception);
-            alert("查询失败");
-            isUpdating = false;
+            commonError(XMLHttpRequest, textStatus, exception, "查询失败");
         }
     })
 }
@@ -70,10 +70,7 @@ function addSn() {
             alert("添加成功");
         },
         error: function (XMLHttpRequest, textStatus, exception) {
-            console.log(XMLHttpRequest);
-            console.log(textStatus);
-            console.log(exception);
-            alert("添加失败")
+            commonError(XMLHttpRequest, textStatus, exception, "添加失败");
         }
     })
 }
@@ -91,16 +88,13 @@ function deleteSn() {
             alert("删除成功");
         },
         error: function (XMLHttpRequest, textStatus, exception) {
-            console.log(XMLHttpRequest);
-            console.log(textStatus);
-            console.log(exception);
-            alert("删除失败")
+            commonError(XMLHttpRequest, textStatus, exception, "删除失败");
         }
     })
 }
 
 function checkSyncStatus() {
-    var text = document.getElementById("syncStatus")
+    var text = document.getElementById("syncStatus");
     $.ajax({
         type: "GET",
         url: "syncService/syncStatus",
@@ -113,16 +107,13 @@ function checkSyncStatus() {
             }
         },
         error:function (XMLHttpRequest, textStatus, exception) {
-            console.log(XMLHttpRequest);
-            console.log(textStatus);
-            console.log(exception);
-            alert("查询失败")
+            commonError(XMLHttpRequest, textStatus, exception, "查询失败");
         }
     })
 }
 
 function startSyncTask() {
-    var text = document.getElementById("startSyncResult")
+    var text = document.getElementById("startSyncResult");
     $.ajax({
         type: "GET",
         url: "syncService/sync",
@@ -135,10 +126,7 @@ function startSyncTask() {
             }
         },
         error:function (XMLHttpRequest, textStatus, exception) {
-            console.log(XMLHttpRequest);
-            console.log(textStatus);
-            console.log(exception);
-            alert("启动失败")
+            commonError(XMLHttpRequest, textStatus, exception, "启动失败");
         }
     })
 }
