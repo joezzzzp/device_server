@@ -18,6 +18,7 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
+import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDateTime
@@ -56,15 +57,20 @@ class DeviceService {
     isSyncing = true
     count = sns.size
     val url = String.format(DATE_INFO_URL_TEMPLATE, config.corporateId)
-    sns.forEach {
-      val device = deviceDao.findDevice(it)
-      val request = DeviceInfoRequest(deviceSn = it, endDate = LocalDateTime.now().toInstant(Config.UTC_PLUS_8).toEpochMilli())
-      request.beginDate = device?.updatedAt?.toInstant(Config.UTC_PLUS_8)?.toEpochMilli() ?: 0L
-      getDeviceInfo(url, request)
-      count--
+    try {
+      sns.forEach {
+        val device = deviceDao.findDevice(it)
+        val request = DeviceInfoRequest(deviceSn = it, endDate = LocalDateTime.now().toInstant(Config.UTC_PLUS_8).toEpochMilli())
+        request.beginDate = device?.updatedAt?.toInstant(Config.UTC_PLUS_8)?.toEpochMilli() ?: 0L
+        getDeviceInfo(url, request)
+        count--
+      }
+    } catch (e: Exception) {
+      logger.error("同步异常：{}", e)
+    } finally {
+      isSyncing = false
+      count = 0
     }
-    isSyncing = false
-    count = 0
   }
 
   private fun getDeviceInfo(url: String, request: DeviceInfoRequest) {
