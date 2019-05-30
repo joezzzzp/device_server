@@ -14,6 +14,7 @@ import com.zzz.device.pojo.request.AddSyncDevicesRequest
 import com.zzz.device.pojo.request.ApiCountRequest
 import com.zzz.device.schedule.ScheduledTasks
 import com.zzz.device.service.DeviceService
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.util.StringUtils
@@ -23,10 +24,13 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.time.Instant
 import java.time.LocalDateTime
+import java.time.temporal.TemporalField
 import java.util.concurrent.ExecutorService
 
 @RestController
 class DeviceDataController {
+
+  private val logger = LoggerFactory.getLogger(DeviceDataController::class.java)
 
   @Autowired
   private lateinit var deviceRepo: DeviceRepository
@@ -117,6 +121,19 @@ class DeviceDataController {
       }
     }
     return mapOf("code" to 100, "message" to "Something is wrong")
+  }
+
+  @GetMapping("recount")
+  fun recountDevice(): Map<String, Any> {
+    val allDevices = allDeviceDao.findAll()
+    allDevices.forEach {
+      val device = deviceDao.findDevice(it)
+      device?.run {
+        logger.info("sn: {}, time: {}", this.sn, this.startTime?.toInstant(Config.UTC_PLUS_8)?.toEpochMilli())
+        updateStartTime(it, this.startTime?.toInstant(Config.UTC_PLUS_8)?.toEpochMilli())
+      }
+    }
+    return mapOf("code" to 200, "message" to "success")
   }
 
   @GetMapping("syncService/sync")
