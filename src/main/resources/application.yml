@@ -12,6 +12,7 @@ logging:
 appCron:
   apiCount: 0 0 * * * *
   dataSync: 0 0 * * * *
+  thunderSync: 0 0 1 * * *
 
 config:
   corporateId: 305f55e28c334b958777f9c037a02cd9

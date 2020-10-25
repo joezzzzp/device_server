@@ -6,6 +6,7 @@ import com.zzz.device.dao.AllDeviceDao
 import com.zzz.device.dao.ApiCountDao
 import com.zzz.device.pojo.persistent.ApiCount
 import com.zzz.device.service.DeviceService
+import com.zzz.device.service.ThunderCountService
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.Scheduled
@@ -22,6 +23,9 @@ class ScheduledTasks {
 
   @Autowired
   private lateinit var deviceService: DeviceService
+
+  @Autowired
+  private lateinit var thunderCountService: ThunderCountService
 
   @Autowired
   private lateinit var allDeviceDao: AllDeviceDao
@@ -68,5 +72,15 @@ class ScheduledTasks {
       getDevicesInfo(sns)
     }
     logger.info("end sync at {}", dateFormat.format(Date()))
+  }
+
+  @Scheduled(cron = "\${appCron.thunderSync}")
+  @TokenRefresh
+  fun syncThunderCount() {
+    logger.info("start thunder count sync at {}", dateFormat.format(Date()))
+    thunderCountService.run {
+      sync()
+    }
+    logger.info("end thunder count sync at {}", dateFormat.format(Date()))
   }
 }

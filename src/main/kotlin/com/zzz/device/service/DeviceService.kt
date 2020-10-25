@@ -2,6 +2,7 @@ package com.zzz.device.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.zzz.device.config.Config
+import com.zzz.device.config.Constant
 import com.zzz.device.dao.DeviceDao
 import com.zzz.device.dao.HistoryDao
 import com.zzz.device.pojo.persistent.Device
@@ -28,7 +29,6 @@ import java.util.*
 class DeviceService {
 
   companion object {
-    private const val DATE_INFO_URL_TEMPLATE = "https://api.hizyf.com/DM-open-service/service/getByDate/%s"
     private const val MAX_RETRY_TIMES = 5
   }
 
@@ -56,7 +56,7 @@ class DeviceService {
     }
     isSyncing = true
     count = sns.size
-    val url = String.format(DATE_INFO_URL_TEMPLATE, config.corporateId)
+    val url = String.format(Constant.DATE_INFO_URL_TEMPLATE, config.corporateId)
     try {
       sns.forEach {
         val device = deviceDao.findDevice(it)
