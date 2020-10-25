@@ -51,7 +51,7 @@ class ThunderCountService {
         val startDate = endDate.minusDays(1)
         val lastEndDate = lastEndDateDao.findByJobMark(Constant.THUNDER_COUNT_JOB_MARKER)
         lastEndDate?.date?.let {
-            if (it.isAfter(endDate)) {
+            if (it == endDate || it.isAfter(endDate)) {
                 return
             }
         }
@@ -102,7 +102,7 @@ class ThunderCountService {
     }
 
     fun getThunderCountData(sns: List<String>, startDate: LocalDateTime, endDate: LocalDateTime):
-            Map<String, List<ThunderCount>?>{
+            Map<String, List<ThunderCount>?> {
         val result = mutableMapOf<String, List<ThunderCount>?>()
         sns.toHashSet().forEach {
             result[it] = thunderCountDao.findAllBySnAndDateBetweenOrderByDate(it, startDate, endDate)
