@@ -1,6 +1,7 @@
 package com.zzz.device.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.zzz.device.annotation.TokenRefresh
 import com.zzz.device.config.Config
 import com.zzz.device.config.Constant
 import com.zzz.device.dao.AllDeviceDao
@@ -19,6 +20,7 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
+import java.io.OutputStream
 import java.time.LocalDateTime
 
 @Service
@@ -43,7 +45,7 @@ class ThunderCountService {
     @Autowired
     private lateinit var objectMapper: ObjectMapper
 
-
+    @TokenRefresh
     fun sync() {
         val currentDate = LocalDateTime.now()
         val endDate = LocalDateTime.of(currentDate.year, currentDate.monthValue, currentDate.dayOfMonth,
@@ -93,6 +95,7 @@ class ThunderCountService {
                 val thunderCount = ThunderCount(sn = sn, date = startDate, lighting1 =  lighting1,
                                         lighting2 = lighting2, lighting3 = lighting3)
                 thunderCountDao.saveOne(thunderCount)
+                return
             }
             logger.error("get \"{}\" data failed! error message: {}", request.deviceSn,
                     objectMapper.writeValueAsString(response))
@@ -109,4 +112,30 @@ class ThunderCountService {
         }
         return result
     }
+
+    fun writeExcel(data: Map<String, List<ThunderCount>?>, start: LocalDateTime, end: LocalDateTime,
+                    os: OutputStream) {
+        val maps = mutableMapOf<String, Int>()
+        var current = start
+        var index = 0
+        while (current.isBefore(end)) {
+            index++
+            maps[getDateString(current)] = index
+            current = current.plusDays(1)
+        }
+    }
+
+    fun getDateString(current: LocalDateTime): String {
+        return "${current.year}-${current.monthValue}-${current.dayOfMonth}"
+    }
+
+    fun getIndex(thunderCount: ThunderCount, dateMaps: Map<String, Int>): Int {
+        val dateString = getDateString(thunderCount.date!!)
+        return dateMaps[dateString] ?: -1
+    }
+
+    fun buildCellContent(thunderCount: ThunderCount = ThunderCount()): String {
+        return "(${thunderCount.lighting1}, ${thunderCount.lighting2}, ${thunderCount.lighting3})"
+    }
+
 }

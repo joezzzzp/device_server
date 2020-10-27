@@ -12,6 +12,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import javax.servlet.http.HttpServletResponse
 
 @RestController
 @RequestMapping("/thunderCount")
@@ -30,13 +31,15 @@ class ThunderCountController {
 
     @PostMapping("/get")
     fun getThunderCount(@RequestParam start: String,
-                        @RequestParam end: String): Map<String, List<ThunderCount>?> {
+                        @RequestParam end: String,
+                        response: HttpServletResponse) {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         val time = LocalTime.of(0, 0, 0)
         val startDate = LocalDate.parse(start, formatter)
         val endDate = LocalDate.parse(end, formatter)
         val startDateTime = LocalDateTime.of(startDate, time)
         val endDateTime = LocalDateTime.of(endDate.plusDays(1), time)
-        return thunderCountService.getThunderCountData(allDeviceDao.findAll(), startDateTime, endDateTime)
+        val result = thunderCountService.getThunderCountData(allDeviceDao.findAll(), startDateTime, endDateTime)
+
     }
 }
