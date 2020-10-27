@@ -1,5 +1,6 @@
 package com.zzz.device.controller
 
+import com.sun.xml.internal.ws.encoding.ContentType
 import com.zzz.device.dao.AllDeviceDao
 import com.zzz.device.pojo.persistent.ThunderCount
 import com.zzz.device.service.ThunderCountService
@@ -12,6 +13,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import javax.activation.MimeType
 import javax.servlet.http.HttpServletResponse
 
 @RestController
@@ -40,6 +42,12 @@ class ThunderCountController {
         val startDateTime = LocalDateTime.of(startDate, time)
         val endDateTime = LocalDateTime.of(endDate.plusDays(1), time)
         val result = thunderCountService.getThunderCountData(allDeviceDao.findAll(), startDateTime, endDateTime)
-
+        val excel = thunderCountService.buildExcel(result, startDateTime, endDateTime)
+        response.contentType = "application/vnd.ms-excel"
+        val fileName = "${start}~${end}.xls"
+        response.setHeader("Content-Disposition","attachment;filename=${fileName}")
+        excel.write(response.outputStream)
+        excel.close()
+        response.outputStream.close()
     }
 }

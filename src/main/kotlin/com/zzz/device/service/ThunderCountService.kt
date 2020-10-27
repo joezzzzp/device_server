@@ -11,6 +11,8 @@ import com.zzz.device.pojo.persistent.History
 import com.zzz.device.pojo.persistent.ThunderCount
 import com.zzz.device.pojo.request.DeviceInfoRequest
 import com.zzz.device.pojo.response.DeviceInfoResponse
+import org.apache.poi.hssf.usermodel.HSSFSheet
+import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -22,6 +24,7 @@ import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import java.io.OutputStream
 import java.time.LocalDateTime
+import java.util.*
 
 @Service
 class ThunderCountService {
@@ -113,15 +116,33 @@ class ThunderCountService {
         return result
     }
 
-    fun writeExcel(data: Map<String, List<ThunderCount>?>, start: LocalDateTime, end: LocalDateTime,
-                    os: OutputStream) {
-        val maps = mutableMapOf<String, Int>()
+    fun buildExcel(data: Map<String, List<ThunderCount>?>, start: LocalDateTime, end: LocalDateTime): HSSFWorkbook {
+        val dateMap = TreeMap<String, Int>()
         var current = start
         var index = 0
         while (current.isBefore(end)) {
             index++
-            maps[getDateString(current)] = index
+            dateMap[getDateString(current)] = index
             current = current.plusDays(1)
+        }
+        val workbook = HSSFWorkbook()
+        val sheet = workbook.createSheet()
+        val titleRow = sheet.createRow(0)
+        dateMap.forEach {
+            titleRow.createCell(it.value).setCellValue(it.key)
+        }
+        data.forEach {
+            buildDataRow(sheet, buildStringList(it.key, it.value, dateMap))
+        }
+        return workbook
+    }
+
+    fun buildDataRow(sheet: HSSFSheet, data: List<String?>) {
+        val lastRow = sheet.lastRowNum;
+        val row = sheet.createRow(lastRow + 1)
+        for (i in data.indices) {
+            val cellString = data[i]
+            row.createCell(i).setCellValue(cellString ?: "(0, 0, 0)")
         }
     }
 
@@ -129,13 +150,31 @@ class ThunderCountService {
         return "${current.year}-${current.monthValue}-${current.dayOfMonth}"
     }
 
-    fun getIndex(thunderCount: ThunderCount, dateMaps: Map<String, Int>): Int {
+    fun getIndex(thunderCount: ThunderCount, dateMap: Map<String, Int>): Int {
         val dateString = getDateString(thunderCount.date!!)
-        return dateMaps[dateString] ?: -1
+        return dateMap[dateString] ?: -1
     }
 
     fun buildCellContent(thunderCount: ThunderCount = ThunderCount()): String {
         return "(${thunderCount.lighting1}, ${thunderCount.lighting2}, ${thunderCount.lighting3})"
+    }
+
+    fun buildStringList(sn: String, thunderCounts: List<ThunderCount>?, dateMap: Map<String, Int>): List<String?> {
+        if (dateMap.isEmpty()) {
+            return listOf()
+        }
+        val dataArray = arrayOfNulls<String>(dateMap.size + 1)
+        for (i in dataArray.indices) {
+            dataArray[i] = buildCellContent()
+        }
+        thunderCounts?.forEach {
+            val index = getIndex(it, dateMap)
+            if (index > 0) {
+                dataArray[index] = buildCellContent(it)
+            }
+        }
+        dataArray[0] = sn
+        return dataArray.toList()
     }
 
 }
