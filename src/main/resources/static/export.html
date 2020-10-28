@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>导出</title>
+    <script src="http://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="js/export.js"></script>
+</head>
+<body>
+<h2>
+    雷击数导出
+</h2>
+<p>
+    sn文件：<input type="file" id="sn_file" name="file" multiple>
+    <br/>
+    起始时间：
+    <input type="date" id="start_date" name="start">
+    <br/>
+    终止时间：
+    <input type="date" id="end_date" name="end">
+    <br/>
+    <button id="upload" onclick="exportFile()">
+        提交
+    </button>
+</p>
+
+</body>
+</html>
