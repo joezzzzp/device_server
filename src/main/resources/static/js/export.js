@@ -22,10 +22,11 @@ function exportFile() {
         processData: false,
         contentType: false,
         success: function (response, textStatus, xhr) {
-            var fileName = xhr.getResponseHeader("Content-Disposition")
+            let fileName = xhr.getResponseHeader("Content-Disposition")
                 .split(";")[1].split("filename=")[1];
+            console.log(fileName)
             console.log(response)
-            openDownloadDialog(new Blob([]), fileName)
+            openDownloadDialog(new Blob([response]), fileName)
         },
         error: function (XMLHttpRequest, textStatus, exception) {
             commonError(XMLHttpRequest, textStatus, exception, "导出失败");
@@ -34,8 +35,7 @@ function exportFile() {
 }
 
 function openDownloadDialog(url, saveName) {
-    if(typeof url == 'object' && url instanceof Blob)
-    {
+    if(typeof url == 'object' && url instanceof Blob) {
         url = URL.createObjectURL(url); // 创建blob地址
     }
     var aLink = document.createElement('a');

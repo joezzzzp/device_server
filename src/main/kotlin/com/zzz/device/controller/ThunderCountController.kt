@@ -2,6 +2,8 @@ package com.zzz.device.controller
 
 import com.zzz.device.dao.AllDeviceDao
 import com.zzz.device.service.ThunderCountService
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
@@ -17,6 +19,8 @@ import javax.servlet.http.HttpServletResponse
 @RestController
 @RequestMapping("/thunderCount")
 class ThunderCountController {
+
+    val logger: Logger = LoggerFactory.getLogger(ThunderCountController::class.java)
 
     @Autowired
     private lateinit var thunderCountService: ThunderCountService
@@ -40,14 +44,20 @@ class ThunderCountController {
         val endDate = LocalDate.parse(end, formatter)
         val startDateTime = LocalDateTime.of(startDate, time)
         val endDateTime = LocalDateTime.of(endDate.plusDays(1), time)
+        if (startDateTime.isAfter(endDateTime)) {
+            response.sendError(500, "invalid date")
+            logger.warn("invalid date, start: {}, end: {}", start, end)
+            return
+        }
         val result = thunderCountService.getThunderCountData(readFile(file.inputStream), startDateTime, endDateTime)
         val excel = thunderCountService.buildExcel(result, startDateTime, endDateTime)
-        response.contentType = "application/octet-stream"
+        response.contentType = "application/vnd.ms-excel"
         val fileName = "${start}~${end}.xls"
         response.setHeader("Content-Disposition","attachment;filename=${fileName}")
         excel.write(response.outputStream)
-        excel.close()
+        response.outputStream.flush()
         response.outputStream.close()
+        excel.close()
     }
 
     fun readFile(inputStream: InputStream): List<String> {
