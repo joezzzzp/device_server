@@ -5,6 +5,7 @@ import com.zzz.device.service.ThunderCountService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.util.StringUtils
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import java.io.InputStream
@@ -65,10 +66,13 @@ class ThunderCountController {
         val result = mutableListOf<String>()
         while (scanner.hasNextLine()) {
             val line = scanner.nextLine()
+            if (StringUtils.isEmpty(line)) {
+                continue
+            }
             if (line.startsWith("#")) {
                 continue
             }
-            result.add(line)
+            result.add(line.trim())
         }
         inputStream.close()
         scanner.close()

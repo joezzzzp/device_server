@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>导出</title>
     <script src="http://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="js/export.js" type="text/javascript"></script>
 </head>
 <body>
 <h2>
@@ -13,10 +14,10 @@
     sn文件：<input type="file" id="sn_file" name="file" multiple>
     <br/>
     起始时间：
-    <input type="date" id="start_date" name="start">
+    <label for="start_date"></label><input type="date" id="start_date" name="start" required min="2020-11-01">
     <br/>
     终止时间：
-    <input type="date" id="end_date" name="end">
+    <label for="end_date"></label><input type="date" id="end_date" name="end" required min="2020-11-01">
     <br/>
     <input type="submit" value="提交">
 </form>

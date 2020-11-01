@@ -126,7 +126,7 @@ class ThunderCountService {
             current = current.plusDays(1)
         }
         val workbook = HSSFWorkbook()
-        val sheet = workbook.createSheet()
+        val sheet = workbook.createSheet("数据")
         val titleRow = sheet.createRow(0)
         dateMap.forEach {
             titleRow.createCell(it.value).setCellValue(it.key)
@@ -134,6 +134,9 @@ class ThunderCountService {
         data.forEach {
             buildDataRow(sheet, buildStringList(it.key, it.value, dateMap))
         }
+        val descriptionSheet = workbook.createSheet("说明")
+        val row1 = descriptionSheet.createRow(0)
+        row1.createCell(0).setCellValue("数据格式：(A-雷击，B-雷击，C-雷击)")
         return workbook
     }
 
