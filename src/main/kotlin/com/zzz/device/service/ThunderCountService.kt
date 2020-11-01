@@ -8,6 +8,7 @@ import com.zzz.device.dao.AllDeviceDao
 import com.zzz.device.dao.LastEndDateDao
 import com.zzz.device.dao.ThunderCountDao
 import com.zzz.device.pojo.persistent.History
+import com.zzz.device.pojo.persistent.LastEndDate
 import com.zzz.device.pojo.persistent.ThunderCount
 import com.zzz.device.pojo.request.DeviceInfoRequest
 import com.zzz.device.pojo.response.DeviceInfoResponse
@@ -69,9 +70,15 @@ class ThunderCountService {
                 logger.error("the error: ", e)
             }
         }
+        if (lastEndDate == null) {
+            lastEndDateDao.save(LastEndDate(jobMark = Constant.THUNDER_COUNT_JOB_MARKER, date = endDate))
+        } else {
+            lastEndDateDao.update(Constant.THUNDER_COUNT_JOB_MARKER, endDate)
+        }
     }
 
     fun syncOne(sn: String, startDate: LocalDateTime, endDate: LocalDateTime) {
+        logger.info("sync thunder count, sn: {}, start: {}, end: {}", sn, startDate.toString(), endDate.toString())
         val url = String.format(Constant.DATE_INFO_URL_TEMPLATE, config.corporateId)
         val restTemplate = RestTemplate()
         val headers = HttpHeaders().apply {
